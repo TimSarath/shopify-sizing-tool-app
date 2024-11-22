@@ -3,7 +3,7 @@ const session = require("express-session");
 const dotenv = require("dotenv");
 const axios = require("axios");
 const sequelize = require("./config/database");
-const sizeChartRoutes = require("./routes/sizeChart");
+const sizeChartRoutes = require("./routes/sizeChart"); // Ensure path is correct
 const webhookRoutes = require("./routes/webhooks");
 
 dotenv.config();
@@ -13,6 +13,20 @@ const PORT = process.env.PORT || 5001;
 
 // Middleware for parsing JSON
 app.use(express.json());
+
+// CORS middleware to enable requests from the frontend
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // Allows all origins - you may restrict this in production
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Intercept the OPTIONS method
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  next();
+});
 
 // Configure sessions for storing OAuth tokens securely
 app.use(
@@ -75,11 +89,11 @@ app.get("/auth/callback", async (req, res) => {
 
 // Basic home route
 app.get("/", (req, res) => {
-  res.send("Welcome to the Sizing Tool API");
+  res.send("Welcome to the Sizing Tool APP");
 });
 
 // Register size chart and webhook routes
-app.use("/api/size-chart", sizeChartRoutes);
+app.use("/api/size-chart", sizeChartRoutes); // Make sure the route is correct
 app.use("/webhooks", webhookRoutes);
 
 // Test and sync database
